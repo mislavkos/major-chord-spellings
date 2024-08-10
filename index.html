@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Major Chord Spellings</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        #flashcard {
+            width: 300px;
+            height: 200px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        #flashcard:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+    <div id="flashcard">Click to start</div>
+
+    <script>
+        const chords = [
+            { question: "A Major", answer: "A - C# - E" },
+            { question: "B Major", answer: "B - D# - F#" },
+            { question: "C Major", answer: "C - E - G" },
+            { question: "D Major", answer: "D - F# - A" },
+            { question: "E Major", answer: "E - G# - B" },
+            { question: "F Major", answer: "F - A - C" },
+            { question: "G Major", answer: "G - B - D" }
+        ];
+
+        let showAnswer = false;
+        let currentChord;
+        let lastChordIndex = null;
+
+        const flashcard = document.getElementById("flashcard");
+
+        function getRandomChord() {
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * chords.length);
+            } while (randomIndex === lastChordIndex);
+
+            lastChordIndex = randomIndex;
+            return chords[randomIndex];
+        }
+
+        function displayQuestion() {
+            showAnswer = false;
+            currentChord = getRandomChord();
+            flashcard.textContent = currentChord.question;
+        }
+
+        function displayAnswer() {
+            showAnswer = true;
+            flashcard.textContent = currentChord.answer;
+        }
+
+        flashcard.addEventListener("click", () => {
+            if (showAnswer) {
+                displayQuestion();
+            } else {
+                displayAnswer();
+            }
+        });
+
+        // Start by displaying the first question
+        displayQuestion();
+    </script>
+</body>
+</html>
