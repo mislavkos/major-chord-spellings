@@ -16,16 +16,15 @@
         }
         #flashcard {
             width: 300px;
-            height: 450px;
+            height: 400px;
             background-color: white;
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            text-align: center;
+            align-items: center; /* Center horizontally */
+            justify-content: center; /* Center vertically */
+            font-size: 32px;
             cursor: pointer;
             transition: transform 0.3s ease;
             padding: 20px;
@@ -34,14 +33,49 @@
         #flashcard:active {
             transform: scale(0.98);
         }
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: repeat(3, 1fr);
-            gap: 10px;
+        .header {
+            height: 25%;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center horizontally */
+            justify-content: center; /* Center vertically */
+            box-sizing: border-box;
+        }
+        .title {
+            font-size: 32px;
+            margin: 0;
+            padding: 5px;
+        }
+        .subtitle {
+            font-size: 24px;
+            margin: 0;
+            padding: 5px;
+        }
+        .content {
+            height: 60%;
             width: 100%;
-            height: 70%; /* Adjusted to ensure all cells are visible */
             position: relative;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+        .content.question {
+            font-size: 44px;
+            text-align: center; /* Center text horizontally */
+            display: flex;
+            align-items: center; /* Center vertically */
+            justify-content: center; /* Center horizontally */
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            box-sizing: border-box; /* Include padding and border in width and height */
+        }
+        .content.grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 10px;
+            height: 100%; /* Full height of the content area */
+            width: 100%; /* Full width of the content area */
         }
         .cell {
             display: flex;
@@ -52,43 +86,47 @@
             border-radius: 5px;
             font-size: 20px;
             color: #333;
-            min-height: 80px; /* Ensure a consistent size for all cells */
+            min-height: 50px; /* Ensure a minimum height for cells */
+            box-sizing: border-box; /* Include padding and border in width and height */
         }
         .cell.bottom {
             grid-column: 1 / span 2;
             justify-self: center;
-            width: 100%; /* Ensure the bottom cell spans the full width */
+            width: 50%; /* Width of 50% */
+            margin: 0 auto; /* Center horizontally */
         }
-        .title {
-            font-size: 24px;
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 20px; /* Separation from the top cell */
-            color: #252525;
-            position: absolute;
-            top: 40px;
-        }
-        .mnemonic {
-            font-size: 16px;
-            margin-top: 20px; /* Separation from the bottom cell */
+        .footer {
+            font-size: 20px;
             color: #555;
-            position: absolute;
-            bottom: 10px;
+            height: 15%;
+            display: flex;
+            font-style: italic;
+            align-items: center; /* Center vertically */
+            justify-content: center; /* Center horizontally */
+            padding: 10px 0;
+            box-sizing: border-box;
         }
     </style>
 </head>
 <body>
-    <div id="flashcard">Click to start</div>
+    <div id="flashcard">
+        <div class="header" id="header">
+            <div class="title" id="title">Chord Spellings</div>
+            <div class="subtitle" id="subtitle">Major Chords</div>
+        </div>
+        <div id="content" class="content">Click to start</div>
+        <div class="footer" id="footer"></div>
+    </div>
 
     <script>
         const chords = [
             { question: "A Major", answer: "A - C# - E", mnemonic: "All Cats Eat", position: "top-right" },
             { question: "B Major", answer: "B - D# - F#", mnemonic: "Big Dogs Fly", position: "bottom" },
             { question: "C Major", answer: "C - E - G", mnemonic: "Cats Eat Grapes", position: "top-left" },
-            { question: "D Major", answer: "D - F# - A", mnemonic: "Dogs Fly Always", position: "middle-right" },
+            { question: "D Major", answer: "D - F# - A", mnemonic: "Dog Friendly Area", position: "middle-right" },
             { question: "E Major", answer: "E - G# - B", mnemonic: "Every Good Boy", position: "bottom-right" },
             { question: "F Major", answer: "F - A - C", mnemonic: "Fixed At Center", position: "middle-left" },
-            { question: "G Major", answer: "G - B - D", mnemonic: "Good Boys Do", position: "bottom-left" }
+            { question: "G Major", answer: "G - B - D", mnemonic: "Good Boy Doug", position: "bottom-left" }
         ];
 
         let showAnswer = false;
@@ -96,6 +134,8 @@
         let lastChordIndices = [];
 
         const flashcard = document.getElementById("flashcard");
+        const content = document.getElementById("content");
+        const footer = document.getElementById("footer");
 
         function getRandomChord() {
             let randomIndex;
@@ -104,7 +144,7 @@
             } while (lastChordIndices.includes(randomIndex));
 
             lastChordIndices.push(randomIndex);
-            // don't use chord if it was among the last two shown
+            // Don't use chord if it was among the last two shown
             if (lastChordIndices.length >= 2) {
                 lastChordIndices.splice(0, 1);
             }
@@ -114,16 +154,16 @@
         function displayQuestion() {
             showAnswer = false;
             currentChord = getRandomChord();
-            flashcard.innerHTML = currentChord.question;
+            content.innerHTML = `<div class="content question">${currentChord.question}</div>`;
+            footer.innerHTML = ''; // Clear the footer
         }
 
         function displayAnswer() {
             showAnswer = true;
 
             // Create a grid layout
-            flashcard.innerHTML = `
-                <div class="title" id="top">Major Chord Spellings</div>
-                <div class="grid">
+            content.innerHTML = `
+                <div class="content grid">
                     <div class="cell" id="top-left"></div>
                     <div class="cell" id="top-right"></div>
                     <div class="cell" id="middle-left"></div>
@@ -137,10 +177,8 @@
             // Place the chord spelling in the correct position
             document.getElementById(currentChord.position).textContent = currentChord.answer;
 
-            // Add mnemonic if available
-            if (currentChord.mnemonic) {
-                flashcard.innerHTML += `<div class="mnemonic">${currentChord.mnemonic}</div>`;
-            }
+            // Add footer
+            footer.innerHTML = currentChord.mnemonic ? currentChord.mnemonic : "";
         }
 
         flashcard.addEventListener("click", () => {
